@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>H5 拓客矩阵</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body {
+      background: #0e0e0e;
+      overflow-y: auto;
+    }
+
+    .hub {
+      min-height: 100vh;
+      padding: 56px 24px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hub-emoji { font-size: 40px; margin-bottom: 12px; }
+
+    .hub-title {
+      font-size: 24px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .hub-sub {
+      font-size: 13px;
+      color: rgba(255,255,255,0.3);
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .game-card {
+      width: 100%;
+      max-width: 340px;
+      border-radius: 20px;
+      padding: 24px 22px;
+      margin-bottom: 14px;
+      cursor: pointer;
+      transition: transform 0.15s;
+      text-decoration: none;
+      display: block;
+      position: relative;
+      background: #1a1a1a;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .game-card:active { transform: scale(0.98); }
+
+    .game-card::after {
+      content: '→';
+      position: absolute;
+      right: 22px;
+      top: 24px;
+      font-size: 18px;
+      color: rgba(255,255,255,0.15);
+    }
+
+    .game-emoji { font-size: 32px; margin-bottom: 12px; }
+
+    .game-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+      padding-right: 28px;
+    }
+
+    .game-desc {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.5;
+      padding-right: 28px;
+    }
+
+    .game-tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 12px;
+    }
+
+    .footer-note {
+      margin-top: 32px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.12);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="hub">
+    <div class="hub-emoji">📣</div>
+    <div class="hub-title">投广告这件事<br>先看看这几个</div>
+    <div class="hub-sub">选一个你感兴趣的</div>
+
+    <a class="game-card" href="roast/index.html">
+      <div class="game-emoji">📱</div>
+      <div class="game-title">朋友圈广告：打不过就加入</div>
+      <div class="game-desc">模拟你的广告出现在朋友圈的样子</div>
+      <span class="game-tag tag-green">效果模拟</span>
+    </a>
+
+    <a class="game-card" href="wechat-ads/index.html">
+      <div class="game-emoji">📱</div>
+      <div class="game-title">你也想在微信投广告</div>
+      <div class="game-desc">先花 2 分钟搞清楚这 6 件事</div>
+      <span class="game-tag tag-green">新手必看</span>
+    </a>
+
+    <a class="game-card" href="boss-type/index.html">
+      <div class="game-emoji">🧪</div>
+      <div class="game-title">我的投放老板类型是【？？？】</div>
+      <div class="game-desc">5 道题，揭穿你的投放人格</div>
+      <span class="game-tag tag-blue">人格测试</span>
+    </a>
+
+    <div class="footer-note">在广告里摸爬滚打的人，都在这</div>
+  </div>
+</body>
+</html>

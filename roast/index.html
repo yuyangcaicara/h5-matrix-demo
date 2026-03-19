@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>30s 模拟朋友圈广告</title>
+  <link rel="stylesheet" href="../shared.css">
+  <style>
+    body { background: #0e0e0e; }
+
+    /* Cover */
+    .cover-emoji { font-size: 56px; margin-bottom: 20px; }
+    .cover-examples {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+      justify-content: center;
+    }
+    .cover-examples .mini-card {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .cover-hook {
+      font-size: 14px;
+      color: rgba(255,255,255,0.5);
+      margin-top: 16px;
+      padding: 8px 20px;
+      background: rgba(74,222,128,0.06);
+      border: 1px solid rgba(74,222,128,0.12);
+      border-radius: 20px;
+    }
+
+    /* Selection screens shared */
+    .sel-area {
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .sel-title {
+      font-size: 22px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .sel-sub {
+      font-size: 14px;
+      color: rgba(255,255,255,0.35);
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .sel-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .sel-card {
+      padding: 20px 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .sel-card:active { transform: scale(0.97); }
+
+    .sel-card.picked {
+      border-color: rgba(74,222,128,0.5);
+      background: rgba(74,222,128,0.08);
+    }
+
+    .sel-card .sel-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .sel-card .sel-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.8);
+    }
+
+    /* Goal list */
+    .sel-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sel-list-item {
+      padding: 18px 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      font-size: 15px;
+      color: rgba(255,255,255,0.8);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .sel-list-item:active { transform: scale(0.98); }
+
+    .sel-list-item.picked {
+      border-color: rgba(74,222,128,0.5);
+      background: rgba(74,222,128,0.08);
+    }
+
+    .sel-list-item .sel-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    /* Name input screen */
+    .name-area {
+      width: 100%;
+      max-width: 340px;
+      text-align: center;
+    }
+
+    .name-input {
+      width: 100%;
+      padding: 18px 20px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 600;
+      color: #fff;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 16px;
+    }
+
+    .name-input::placeholder {
+      color: rgba(255,255,255,0.2);
+      font-weight: 400;
+    }
+
+    .name-input:focus {
+      border-color: rgba(74,222,128,0.5);
+    }
+
+    .name-hint {
+      font-size: 12px;
+      color: rgba(255,255,255,0.2);
+      margin-bottom: 28px;
+    }
+
+    .name-skip {
+      display: block;
+      margin: 12px auto 0;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.25);
+      font-size: 13px;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    /* Photo upload area */
+    .photo-section {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .photo-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 12px;
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .photo-item {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .photo-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .photo-item .photo-del {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      background: rgba(0,0,0,0.6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #fff;
+      cursor: pointer;
+      border: none;
+      line-height: 1;
+    }
+
+    .photo-add {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      border: 1.5px dashed rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.03);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .photo-add:active {
+      border-color: rgba(74,222,128,0.5);
+    }
+
+    .photo-add-icon {
+      font-size: 24px;
+      color: rgba(255,255,255,0.2);
+    }
+
+    .photo-add-text {
+      font-size: 11px;
+      color: rgba(255,255,255,0.2);
+    }
+
+    .photo-hint {
+      font-size: 11px;
+      color: rgba(255,255,255,0.15);
+      margin-top: 8px;
+    }
+
+    /* Simulated moments card */
+    .moments-wrapper {
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .sim-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      background: rgba(250,204,21,0.12);
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(250,204,21,0.8);
+      margin-bottom: 20px;
+    }
+
+    .moments-card {
+      width: 100%;
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      color: #111;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    }
+
+    .mc-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 16px 16px 0;
+    }
+
+    .mc-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .mc-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #576b95;
+      margin-bottom: 4px;
+    }
+
+    .mc-text {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #111;
+    }
+
+    /* Image mode tabs */
+    .mc-tabs {
+      display: flex;
+      margin-top: 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 3px;
+    }
+
+    .mc-tab {
+      flex: 1;
+      padding: 8px 0;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.35);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      background: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .mc-tab.active {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    /* Single image */
+    .mc-image {
+      width: 100%;
+      aspect-ratio: 16/9;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #999;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mc-image-bg {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .mc-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .nine-cell img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .mc-image-icon {
+      font-size: 48px;
+    }
+
+    .mc-image-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+
+    /* Nine-grid */
+    .mc-nine-grid {
+      display: none;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 3px;
+      margin: 8px 16px 0;
+    }
+
+    .mc-nine-grid.show {
+      display: grid;
+    }
+
+    .mc-image.hide {
+      display: none;
+    }
+
+    .nine-cell {
+      aspect-ratio: 1;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      overflow: hidden;
+    }
+
+    .nine-cell-icon {
+      font-size: 24px;
+    }
+
+    .nine-cell-text {
+      font-size: 10px;
+      font-weight: 600;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      text-align: center;
+      padding: 0 4px;
+    }
+
+    .mc-footer {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .mc-ad-tag {
+      font-size: 11px;
+      color: #999;
+      padding: 2px 6px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+    }
+
+    .mc-time {
+      font-size: 12px;
+      color: #b2b2b2;
+    }
+
+    /* Social interactions (likes + comments) */
+    .mc-social {
+      margin: 0 12px 12px;
+      background: #f7f7f7;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .mc-likes {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      font-size: 13px;
+      color: #576b95;
+      border-bottom: 0.5px solid #eaeaea;
+      flex-wrap: wrap;
+      line-height: 1.6;
+    }
+
+    .mc-likes-icon {
+      font-size: 12px;
+      color: #576b95;
+      flex-shrink: 0;
+    }
+
+    .mc-like-name {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .mc-like-comma {
+      margin: 0 -2px;
+    }
+
+    .mc-comments {
+      padding: 6px 10px;
+    }
+
+    .mc-comment {
+      padding: 3px 0;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #111;
+    }
+
+    .mc-comment-name {
+      color: #576b95;
+      font-weight: 600;
+    }
+
+    .mc-comment-reply {
+      color: #576b95;
+      font-weight: 600;
+    }
+
+    .mc-comment-sep {
+      color: #999;
+      margin: 0 2px;
+    }
+
+    /* Actions */
+    .sim-actions {
+      width: 100%;
+      max-width: 340px;
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Step indicator */
+    .step-dots {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .step-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      transition: all 0.3s;
+    }
+
+    .step-dot.active {
+      width: 20px;
+      border-radius: 3px;
+      background: #4ADE80;
+    }
+
+    .step-dot.done {
+      background: rgba(74,222,128,0.4);
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.3);
+      font-size: 13px;
+      cursor: pointer;
+      padding: 6px 0;
+      margin-bottom: 16px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .back-btn:active { color: rgba(255,255,255,0.5); }
+  </style>
+</head>
+<body>
+
+  <!-- Screen 1: Cover -->
+  <div class="screen active" id="s1">
+    <div class="cover-emoji">📱</div>
+    <div class="tag tag-green mb-16">互动体验 · 朋友圈广告模拟器</div>
+    <div class="title">30s 模拟朋友圈广告</div>
+    <div class="subtitle">你的广告出现在朋友圈<br>会是什么样？</div>
+    <button class="btn-primary" onclick="goTo(2)" style="margin-top:20px;">开始生成我的广告</button>
+    <div class="cover-hook">📊 内含腾讯广告行业数据</div>
+  </div>
+
+  <!-- Screen 2: Pick industry -->
+  <div class="screen" id="s2">
+    <div class="sel-area">
+      <button class="back-btn" onclick="goBack(1)">← 上一页</button>
+      <div class="step-dots">
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+      </div>
+      <div class="sel-title">你是做什么的？</div>
+      <div class="sel-sub">选一个最接近的行业</div>
+      <div class="sel-grid" id="indGrid">
+        <!-- dynamically generated -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 3: Pick goal -->
+  <div class="screen" id="s3">
+    <div class="sel-area">
+      <button class="back-btn" onclick="goBack(2)">← 上一页</button>
+      <div class="step-dots">
+        <div class="step-dot done"></div>
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+      </div>
+      <div class="sel-title">你最想要什么？</div>
+      <div class="sel-sub">投广告的核心目标</div>
+      <div class="sel-list" id="goalList">
+        <!-- dynamically generated -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 4: Enter name -->
+  <div class="screen" id="s4">
+    <div class="name-area">
+      <button class="back-btn" onclick="goBack(3)">← 上一页</button>
+      <div class="step-dots">
+        <div class="step-dot done"></div>
+        <div class="step-dot done"></div>
+        <div class="step-dot active"></div>
+      </div>
+      <div class="sel-title">给你的广告起个名</div>
+      <div class="sel-sub">出现在朋友圈的名字</div>
+      <input type="text" class="name-input" id="nameInput" placeholder="比如：张姐奶茶铺" maxlength="10">
+      <div class="name-hint">最多 10 个字 · 不会被公开</div>
+
+      <div class="photo-section">
+        <div class="photo-title">上传你的产品/门店照片（可选，最多 9 张）</div>
+        <div class="photo-grid" id="photoGrid">
+          <label class="photo-add" id="photoAddBtn">
+            <input type="file" accept="image/*" multiple hidden id="photoInput">
+            <div class="photo-add-icon">+</div>
+            <div class="photo-add-text">添加照片</div>
+          </label>
+        </div>
+        <div class="photo-hint">不上传则使用模板效果</div>
+      </div>
+
+      <button class="btn-primary" style="margin-top:24px;" onclick="generateAd()">生成我的广告</button>
+      <button class="name-skip" onclick="generateAd()">跳过，用默认效果</button>
+    </div>
+  </div>
+
+  <!-- Screen 5: Simulated ad -->
+  <div class="screen" id="s5">
+    <div class="moments-wrapper">
+      <div class="sim-badge">⚠️ 效果模拟 · 仅供参考</div>
+
+      <div class="moments-card" id="momentsCard">
+        <div class="mc-header">
+          <div class="mc-avatar" id="mcAvatar"></div>
+          <div>
+            <div class="mc-name" id="mcName"></div>
+            <div class="mc-text" id="mcText"></div>
+          </div>
+        </div>
+        <div class="mc-image" id="mcImage">
+          <div class="mc-image-bg" id="mcImageBg">
+            <div class="mc-image-icon" id="mcImageIcon"></div>
+            <div class="mc-image-text" id="mcImageText"></div>
+          </div>
+        </div>
+        <div class="mc-nine-grid" id="mcNineGrid">
+          <!-- dynamically generated -->
+        </div>
+        <div class="mc-footer">
+          <span class="mc-ad-tag">广告</span>
+          <span class="mc-time">刚刚</span>
+        </div>
+        <div class="mc-social" id="mcSocial" style="display:none;"></div>
+      </div>
+
+      <div class="mc-tabs">
+        <button class="mc-tab active" onclick="switchTab('single')">单图模式</button>
+        <button class="mc-tab" onclick="switchTab('nine')">九宫格模式</button>
+      </div>
+    </div>
+
+    <div class="sim-actions">
+      <button class="btn-primary w-full" onclick="goTo(6)">我要投这条 →</button>
+      <button class="share-btn" onclick="handleShare()">发给朋友看看我的广告 →</button>
+    </div>
+  </div>
+
+  <!-- Screen 6: CTA -->
+  <div class="screen" id="s6">
+    <div style="width:100%;max-width:340px;text-align:center;">
+      <div style="font-size:48px;margin-bottom:16px;">🚀</div>
+      <div class="title" style="font-size:22px;">想让这条广告<br>真的出现在朋友圈？</div>
+      <div class="subtitle">添加领取腾讯广告行业数据<br>了解你的行业同行都怎么投的</div>
+      <div class="qr-placeholder">企微二维码</div>
+      <button class="btn-primary w-full mt-16">领取腾讯广告行业数据</button>
+    </div>
+  </div>
+
+  <script>
+    // === Data ===
+    const industries = [
+      { key: 'food',    icon: '🍵', label: '餐饮美食' },
+      { key: 'beauty',  icon: '💇', label: '丽人美业' },
+      { key: 'home',    icon: '🏠', label: '家装建材' },
+      { key: 'edu',     icon: '🎓', label: '教育培训' },
+      { key: 'retail',  icon: '🛒', label: '电商零售' },
+      { key: 'local',   icon: '🏪', label: '本地生活' },
+      { key: 'other',   icon: '📦', label: '其他行业' }
+    ];
+
+    const goals = [
+      { key: 'consult', icon: '📞', label: '客户来咨询' },
+      { key: 'visit',   icon: '🚶', label: '到店里消费' },
+      { key: 'wechat',  icon: '💬', label: '加我微信' },
+      { key: 'order',   icon: '🛒', label: '直接下单' }
+    ];
+
+    // Ad templates per industry
+    const adTemplates = {
+      food: {
+        avatar: '🍵',
+        defaultName: '你的餐饮店',
+        texts: {
+          consult: '新品上线！到店免费试吃，好吃再买单 👇',
+          visit:   '📍 离你 500 米，到店消费满 50 减 15',
+          wechat:  '加老板微信，进吃货福利群，每周秒杀价 🔥',
+          order:   '招牌奶茶 9.9 元限时抢，手慢无 ⏰'
+        },
+        imageColors: ['#FF6B35', '#F7931E'],
+        imageIcon: '🧋',
+        imageText: '到店立减 · 新客专享',
+        nineGrid: [
+          { icon: '🧋', text: '招牌奶茶' },
+          { icon: '🍰', text: '新品蛋糕' },
+          { icon: '🍜', text: '人气套餐' },
+          { icon: '🎁', text: '到店有礼' },
+          { icon: '⭐', text: '好评如潮' },
+          { icon: '📍', text: '就在附近' },
+          { icon: '🔥', text: '限时特惠' },
+          { icon: '🥤', text: '第二杯半价' },
+          { icon: '📸', text: '打卡圣地' }
+        ],
+      },
+      beauty: {
+        avatar: '💇',
+        defaultName: '你的美业店',
+        texts: {
+          consult: '夏日焕新！皮肤管理体验价 99 元，限前 30 名',
+          visit:   '📍 新店开业，到店体验免费送小样礼包',
+          wechat:  '加微信领变美攻略，还有闺蜜同行第二人半价 💅',
+          order:   '爆款美甲套餐 68 元起，在线预约立减 20'
+        },
+        imageColors: ['#E91E8C', '#FF69B4'],
+        imageIcon: '💅',
+        imageText: '变美不贵 · 限时体验',
+        nineGrid: [
+          { icon: '💅', text: '精致美甲' },
+          { icon: '💇', text: '造型设计' },
+          { icon: '✨', text: '皮肤管理' },
+          { icon: '🎀', text: '闺蜜同行' },
+          { icon: '💐', text: '到店有礼' },
+          { icon: '📍', text: '就在附近' },
+          { icon: '🌟', text: '好评返现' },
+          { icon: '🎁', text: '新客专享' },
+          { icon: '📸', text: '变美日记' }
+        ],
+      },
+      home: {
+        avatar: '🏠',
+        defaultName: '你的家装店',
+        texts: {
+          consult: '0 元量房设计！同小区 3 套实景案例，点击查看 👇',
+          visit:   '📍 周末样板间开放日，到店送全屋设计方案',
+          wechat:  '加微信看你家户型的 3D 效果图，免费出方案 🏡',
+          order:   '全屋定制工厂直供，比门店省 30%，限时报名'
+        },
+        imageColors: ['#2D8CF0', '#4ECDC4'],
+        imageIcon: '🏡',
+        imageText: '免费设计 · 实景案例',
+        nineGrid: [
+          { icon: '🏡', text: '实景案例' },
+          { icon: '📐', text: '免费量房' },
+          { icon: '🎨', text: '设计方案' },
+          { icon: '🪑', text: '全屋定制' },
+          { icon: '💰', text: '工厂直供' },
+          { icon: '📍', text: '就在附近' },
+          { icon: '⭐', text: '口碑商家' },
+          { icon: '🔧', text: '质保无忧' },
+          { icon: '📸', text: '前后对比' }
+        ],
+      },
+      edu: {
+        avatar: '🎓',
+        defaultName: '你的教育机构',
+        texts: {
+          consult: '暑假班早鸟价 5 折！名师 1 对 1，先试听再报名',
+          visit:   '📍 免费试听课，到校即送学习大礼包 🎁',
+          wechat:  '加老师微信，领学科诊断报告 + 提分方案 📚',
+          order:   '爆款网课 49 元 10 节，跟着名师弯道超车'
+        },
+        imageColors: ['#5B5EA6', '#9B59B6'],
+        imageIcon: '📚',
+        imageText: '免费试听 · 名师授课',
+        nineGrid: [
+          { icon: '📚', text: '名师授课' },
+          { icon: '🎯', text: '精准提分' },
+          { icon: '🏅', text: '学员成果' },
+          { icon: '🎁', text: '试听有礼' },
+          { icon: '👩‍🏫', text: '1对1辅导' },
+          { icon: '📍', text: '就在附近' },
+          { icon: '⭐', text: '家长好评' },
+          { icon: '📖', text: '免费资料' },
+          { icon: '🏫', text: '教学环境' }
+        ],
+      },
+      retail: {
+        avatar: '🛒',
+        defaultName: '你的网店',
+        texts: {
+          consult: '爆款清仓！工厂直供价，咨询客服再减 10 元',
+          visit:   '📍 线下体验店开业，到店购买全场 8 折',
+          wechat:  '加微信进会员群，每天专属折扣 + 新品内购价 🔥',
+          order:   '限时秒杀 19.9 包邮！好评过万，闭眼入'
+        },
+        imageColors: ['#FF4757', '#FF6348'],
+        imageIcon: '🛍️',
+        imageText: '限时特惠 · 工厂直供',
+        nineGrid: [
+          { icon: '🛍️', text: '爆款推荐' },
+          { icon: '🔥', text: '限时秒杀' },
+          { icon: '📦', text: '工厂直发' },
+          { icon: '⭐', text: '好评过万' },
+          { icon: '🎁', text: '买一送一' },
+          { icon: '🚚', text: '包邮到家' },
+          { icon: '💰', text: '超值价格' },
+          { icon: '🏷️', text: '新品首发' },
+          { icon: '📸', text: '买家秀' }
+        ],
+      },
+      local: {
+        avatar: '🏪',
+        defaultName: '你的店',
+        texts: {
+          consult: '新客体验价！在线预约立减，到店享专属服务 👇',
+          visit:   '📍 就在你附近，到店体验还有惊喜礼包',
+          wechat:  '加微信免费咨询，还能领新客专属优惠券 🎁',
+          order:   '在线预约更方便，新客首单立享优惠'
+        },
+        imageColors: ['#00B894', '#00CEC9'],
+        imageIcon: '🏪',
+        imageText: '附近好店 · 新客体验',
+        nineGrid: [
+          { icon: '🏪', text: '门店实拍' },
+          { icon: '⭐', text: '好评如潮' },
+          { icon: '🎁', text: '新客有礼' },
+          { icon: '📍', text: '就在附近' },
+          { icon: '💰', text: '透明定价' },
+          { icon: '📞', text: '在线预约' },
+          { icon: '🤝', text: '售后保障' },
+          { icon: '🔥', text: '限时优惠' },
+          { icon: '📸', text: '真实案例' }
+        ],
+      },
+      other: {
+        avatar: '📦',
+        defaultName: '你的店',
+        texts: {
+          consult: '新客专享福利！免费咨询体验，满意再付款',
+          visit:   '📍 新店开业大酬宾，到店消费享 8 折优惠',
+          wechat:  '加微信了解更多，还有专属优惠等你领 🎁',
+          order:   '爆款直降 50%，限时抢购，手慢无'
+        },
+        imageColors: ['#636e72', '#b2bec3'],
+        imageIcon: '🎯',
+        imageText: '新客福利 · 限时优惠',
+        nineGrid: [
+          { icon: '🎯', text: '精选服务' },
+          { icon: '🔥', text: '限时优惠' },
+          { icon: '⭐', text: '口碑商家' },
+          { icon: '🎁', text: '新客有礼' },
+          { icon: '📍', text: '就在附近' },
+          { icon: '💬', text: '在线咨询' },
+          { icon: '🏷️', text: '超值套餐' },
+          { icon: '📸', text: '真实案例' },
+          { icon: '🤝', text: '售后保障' }
+        ],
+      }
+    };
+
+    // === State ===
+    let pickedIndustry = null;
+    let pickedGoal = null;
+    let uploadedPhotos = []; // array of dataURL strings, max 9
+
+    // === Fake social data ===
+    const fakeNames = ['小李', '阿珍', '张总', '王姐', '刘哥', '小美', '老陈', '阿强', '小周', '赵姐', 'Amy', '大伟'];
+    const fakeComments = {
+      food: [
+        { text: '这家我吃过，真不错！', type: 'direct' },
+        { text: '在哪里啊？想去看看', type: 'direct' },
+        { text: '下次一起去', type: 'reply' },
+        { text: '帮我也带一份', type: 'direct' },
+        { text: '看着好好吃', type: 'direct' },
+      ],
+      beauty: [
+        { text: '这家做得好吗？求分享', type: 'direct' },
+        { text: '我上次去做过，效果很好', type: 'direct' },
+        { text: '周末约起来！', type: 'reply' },
+        { text: '价格怎么样', type: 'direct' },
+        { text: '种草了', type: 'direct' },
+      ],
+      home: [
+        { text: '我家也准备装修，先看看', type: 'direct' },
+        { text: '他们家性价比挺高的', type: 'direct' },
+        { text: '能上门量房不？', type: 'direct' },
+        { text: '风格蛮好看的', type: 'direct' },
+        { text: '帮我也问问', type: 'reply' },
+      ],
+      edu: [
+        { text: '我家孩子也在这学，推荐', type: 'direct' },
+        { text: '老师怎么样？', type: 'direct' },
+        { text: '一起报名有优惠不', type: 'reply' },
+        { text: '看着挺专业的', type: 'direct' },
+        { text: '试听课怎么约？', type: 'direct' },
+      ],
+      retail: [
+        { text: '链接发我看看', type: 'direct' },
+        { text: '这个我买过，质量不错', type: 'direct' },
+        { text: '帮我也带一个', type: 'reply' },
+        { text: '有没有团购价？', type: 'direct' },
+        { text: '看着不错，种草了', type: 'direct' },
+      ],
+      local: [
+        { text: '朋友推荐过，说不错', type: 'direct' },
+        { text: '在哪里啊？想去看看', type: 'direct' },
+        { text: '下次一起去', type: 'reply' },
+        { text: '服务怎么样？', type: 'direct' },
+        { text: '帮我也约一个', type: 'direct' },
+      ],
+      other: [
+        { text: '这个挺有意思的', type: 'direct' },
+        { text: '靠谱吗？想了解下', type: 'direct' },
+        { text: '朋友推荐过', type: 'direct' },
+        { text: '改天去看看', type: 'reply' },
+        { text: '帮我问问价格', type: 'direct' },
+      ]
+    };
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function generateSocial(industry) {
+      const names = shuffle(fakeNames);
+      let html = '';
+
+      // Likes (3-6 people)
+      const likeCount = 3 + Math.floor(Math.random() * 4);
+      const likeNames = names.splice(0, likeCount);
+      html += '<div class="mc-likes"><span class="mc-likes-icon">❤️</span>';
+      html += likeNames.map(n => `<span class="mc-like-name">${n}</span>`).join('<span class="mc-like-comma">，</span>');
+      html += '</div>';
+
+      // Comments (2-3)
+      const commentCount = 2 + Math.floor(Math.random() * 2);
+      const pool = shuffle(fakeComments[industry] || fakeComments.other);
+      const selected = pool.slice(0, commentCount);
+      const commentNames = names.splice(0, commentCount + 1); // extra for reply target
+
+      html += '<div class="mc-comments">';
+      selected.forEach((c, i) => {
+        if (c.type === 'reply' && i > 0) {
+          html += `<div class="mc-comment"><span class="mc-comment-name">${commentNames[i]}</span><span class="mc-comment-sep">回复</span><span class="mc-comment-reply">${commentNames[commentCount]}</span>：${c.text}</div>`;
+        } else {
+          html += `<div class="mc-comment"><span class="mc-comment-name">${commentNames[i]}</span>：${c.text}</div>`;
+        }
+      });
+      html += '</div>';
+
+      return html;
+    }
+
+    // === Init ===
+    function init() {
+      // Render industry grid
+      const grid = document.getElementById('indGrid');
+      grid.innerHTML = industries.map(ind => `
+        <div class="sel-card" onclick="pickIndustry('${ind.key}', this)">
+          <div class="sel-icon">${ind.icon}</div>
+          <div class="sel-label">${ind.label}</div>
+        </div>
+      `).join('');
+
+      // Render goal list
+      const list = document.getElementById('goalList');
+      list.innerHTML = goals.map(g => `
+        <div class="sel-list-item" onclick="pickGoal('${g.key}', this)">
+          <div class="sel-icon">${g.icon}</div>
+          <div>${g.label}</div>
+        </div>
+      `).join('');
+
+      // Photo upload handler
+      document.getElementById('photoInput').addEventListener('change', handlePhotoUpload);
+    }
+
+    // === Photo Upload ===
+    function handlePhotoUpload(e) {
+      const files = Array.from(e.target.files);
+      const remaining = 9 - uploadedPhotos.length;
+      const toAdd = files.slice(0, remaining);
+
+      toAdd.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          uploadedPhotos.push(ev.target.result);
+          renderPhotoGrid();
+        };
+        reader.readAsDataURL(file);
+      });
+
+      // reset input so same file can be re-selected
+      e.target.value = '';
+    }
+
+    function removePhoto(idx) {
+      uploadedPhotos.splice(idx, 1);
+      renderPhotoGrid();
+    }
+
+    function renderPhotoGrid() {
+      const grid = document.getElementById('photoGrid');
+      let html = '';
+
+      // Render uploaded photos
+      uploadedPhotos.forEach((src, i) => {
+        html += `
+          <div class="photo-item">
+            <img src="${src}">
+            <button class="photo-del" onclick="removePhoto(${i})">&times;</button>
+          </div>`;
+      });
+
+      // Add button (if < 9)
+      if (uploadedPhotos.length < 9) {
+        html += `
+          <label class="photo-add" id="photoAddBtn">
+            <input type="file" accept="image/*" multiple hidden id="photoInput" onchange="handlePhotoUpload(event)">
+            <div class="photo-add-icon">+</div>
+            <div class="photo-add-text">${uploadedPhotos.length === 0 ? '添加照片' : uploadedPhotos.length + '/9'}</div>
+          </label>`;
+      }
+
+      grid.innerHTML = html;
+    }
+
+    // === Interactions ===
+    function pickIndustry(key, el) {
+      if (pickedIndustry) return;
+      pickedIndustry = key;
+      el.classList.add('picked');
+
+      document.querySelectorAll('#indGrid .sel-card').forEach(c => c.style.pointerEvents = 'none');
+
+      const tpl = adTemplates[key];
+      document.getElementById('nameInput').placeholder = '比如：' + tpl.defaultName.replace('你的', '');
+
+      setTimeout(() => goTo(3), 400);
+    }
+
+    function pickGoal(key, el) {
+      if (pickedGoal) return;
+      pickedGoal = key;
+      el.classList.add('picked');
+
+      document.querySelectorAll('#goalList .sel-list-item').forEach(c => c.style.pointerEvents = 'none');
+
+      setTimeout(() => goTo(4), 400);
+    }
+
+    function generateAd() {
+      const nameVal = document.getElementById('nameInput').value.trim();
+      const tpl = adTemplates[pickedIndustry];
+      const shopName = nameVal || tpl.defaultName;
+      const adText = tpl.texts[pickedGoal];
+      const hasPhotos = uploadedPhotos.length > 0;
+
+      // Fill card header
+      document.getElementById('mcAvatar').textContent = tpl.avatar;
+      document.getElementById('mcName').textContent = shopName;
+      document.getElementById('mcText').textContent = adText;
+
+      // === Single image area ===
+      const mcImage = document.getElementById('mcImage');
+      const mcImageBg = document.getElementById('mcImageBg');
+      if (hasPhotos) {
+        // Use first uploaded photo as single image
+        mcImage.style.background = 'none';
+        mcImageBg.innerHTML = `<img src="${uploadedPhotos[0]}" style="width:100%;height:100%;object-fit:cover;">`;
+      } else {
+        // Default: gradient + icon
+        mcImage.style.background = `linear-gradient(135deg, ${tpl.imageColors[0]}, ${tpl.imageColors[1]})`;
+        mcImageBg.innerHTML = `
+          <div class="mc-image-icon">${tpl.imageIcon}</div>
+          <div class="mc-image-text">${tpl.imageText}</div>`;
+      }
+
+      // === Nine grid area ===
+      const nineGrid = document.getElementById('mcNineGrid');
+      let cells = [];
+
+      if (hasPhotos) {
+        // User photos first
+        uploadedPhotos.forEach(src => {
+          cells.push(`<div class="nine-cell"><img src="${src}"></div>`);
+        });
+        // Fill remaining with template cells
+        const remaining = 9 - uploadedPhotos.length;
+        const templateCells = tpl.nineGrid.slice(0, remaining);
+        templateCells.forEach(cell => {
+          cells.push(`
+            <div class="nine-cell" style="background:linear-gradient(135deg, ${tpl.imageColors[0]}, ${tpl.imageColors[1]})">
+              <div class="nine-cell-icon">${cell.icon}</div>
+              <div class="nine-cell-text">${cell.text}</div>
+            </div>`);
+        });
+      } else {
+        // All template
+        tpl.nineGrid.forEach(cell => {
+          cells.push(`
+            <div class="nine-cell" style="background:linear-gradient(135deg, ${tpl.imageColors[0]}, ${tpl.imageColors[1]})">
+              <div class="nine-cell-icon">${cell.icon}</div>
+              <div class="nine-cell-text">${cell.text}</div>
+            </div>`);
+        });
+      }
+
+      nineGrid.innerHTML = cells.join('');
+
+      // === Social interactions (likes + comments) ===
+      const socialEl = document.getElementById('mcSocial');
+      socialEl.innerHTML = generateSocial(pickedIndustry);
+      socialEl.style.display = 'block';
+
+      switchTab('single');
+      goTo(5);
+    }
+
+    // === Tab switch ===
+    function switchTab(mode) {
+      const tabs = document.querySelectorAll('.mc-tab');
+      const img = document.getElementById('mcImage');
+      const nineGrid = document.getElementById('mcNineGrid');
+
+      tabs.forEach(t => t.classList.remove('active'));
+
+      if (mode === 'nine') {
+        tabs[1].classList.add('active');
+        img.style.display = 'none';
+        nineGrid.classList.add('show');
+      } else {
+        tabs[0].classList.add('active');
+        img.style.display = 'flex';
+        nineGrid.classList.remove('show');
+      }
+    }
+
+    // === Navigation ===
+    function goTo(n) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('s' + n).classList.add('active');
+
+      if (n === 4) {
+        setTimeout(() => document.getElementById('nameInput').focus(), 500);
+      }
+    }
+
+    function goBack(toScreen) {
+      // Reset state when going back
+      if (toScreen <= 2) {
+        // Reset industry selection
+        pickedIndustry = null;
+        document.querySelectorAll('#indGrid .sel-card').forEach(c => {
+          c.classList.remove('picked');
+          c.style.pointerEvents = 'auto';
+        });
+      }
+      if (toScreen <= 3) {
+        // Reset goal selection
+        pickedGoal = null;
+        document.querySelectorAll('#goalList .sel-list-item').forEach(c => {
+          c.classList.remove('picked');
+          c.style.pointerEvents = 'auto';
+        });
+      }
+      goTo(toScreen);
+    }
+
+    async function handleShare() {
+      const name = document.getElementById('mcName').textContent;
+      const tpl = adTemplates[pickedIndustry];
+
+      // Create share image using Canvas
+      const canvas = document.createElement('canvas');
+      canvas.width = 750;
+      canvas.height = 1000;
+      const ctx = canvas.getContext('2d');
+
+      // Background
+      ctx.fillStyle = '#0e0e0e';
+      ctx.fillRect(0, 0, 750, 1000);
+
+      // Title
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 36px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('我的朋友圈广告长这样', 375, 80);
+
+      // Card area background
+      ctx.fillStyle = '#fff';
+      roundRect(ctx, 40, 120, 670, 520, 20);
+      ctx.fill();
+
+      // Avatar
+      ctx.font = '40px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(tpl.avatar, 90, 185);
+
+      // Shop name
+      ctx.fillStyle = '#576b95';
+      ctx.font = 'bold 28px -apple-system, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(name, 130, 175);
+
+      // Ad text
+      ctx.fillStyle = '#333';
+      ctx.font = '24px -apple-system, sans-serif';
+      const adText = tpl.texts[pickedGoal];
+      wrapText(ctx, adText, 130, 215, 550, 32);
+
+      // Image placeholder with gradient
+      const grad = ctx.createLinearGradient(60, 280, 690, 540);
+      grad.addColorStop(0, tpl.imageColors[0]);
+      grad.addColorStop(1, tpl.imageColors[1]);
+      ctx.fillStyle = grad;
+      roundRect(ctx, 60, 280, 630, 280, 10);
+      ctx.fill();
+
+      // Icon on image
+      ctx.font = '60px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(tpl.imageIcon, 375, 420);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 22px -apple-system, sans-serif';
+      ctx.fillText(tpl.imageText, 375, 460);
+
+      // Ad tag
+      ctx.fillStyle = '#999';
+      ctx.font = '20px -apple-system, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('广告', 60, 610);
+
+      // Separator
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+      ctx.beginPath();
+      ctx.moveTo(40, 660);
+      ctx.lineTo(710, 660);
+      ctx.stroke();
+
+      // Bottom: "来看看你的" text
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.font = '24px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('你的广告出现在朋友圈会是什么样？', 375, 720);
+
+      // QR code placeholder
+      ctx.fillStyle = '#fff';
+      roundRect(ctx, 275, 750, 200, 200, 12);
+      ctx.fill();
+      ctx.fillStyle = '#999';
+      ctx.font = '18px -apple-system, sans-serif';
+      ctx.fillText('长按识别体验', 375, 860);
+
+      // Footer
+      ctx.fillStyle = 'rgba(255,255,255,0.2)';
+      ctx.font = '18px -apple-system, sans-serif';
+      ctx.fillText('30s 模拟朋友圈广告 · 内含行业数据', 375, 980);
+
+      // Convert to blob and share
+      canvas.toBlob(async (blob) => {
+        if (navigator.share && navigator.canShare) {
+          const file = new File([blob], 'my-ad.png', { type: 'image/png' });
+          try {
+            await navigator.share({
+              title: '30s 模拟朋友圈广告',
+              text: `看看「${name}」的广告出现在朋友圈是什么样！`,
+              files: [file]
+            });
+          } catch(e) {
+            downloadImage(blob);
+          }
+        } else {
+          downloadImage(blob);
+        }
+      }, 'image/png');
+    }
+
+    function downloadImage(blob) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'my-ad.png';
+      a.click();
+      URL.revokeObjectURL(url);
+      alert('图片已保存，可以分享给朋友');
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      let line = '';
+      for (let i = 0; i < text.length; i++) {
+        const testLine = line + text[i];
+        if (ctx.measureText(testLine).width > maxWidth && line) {
+          ctx.fillText(line, x, y);
+          line = text[i];
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, x, y);
+    }
+
+    init();
+  </script>
+</body>
+</html>

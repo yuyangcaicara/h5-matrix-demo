@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>测测我的微信生意潜力</title>
+  <link rel="stylesheet" href="../shared.css">
+  <style>
+    body { background: #0e0e0e; }
+
+    /* Cover */
+    .cover-emoji { font-size: 56px; margin-bottom: 20px; }
+    .cover-dims {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 16px;
+    }
+    .cover-dim {
+      padding: 4px 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+    }
+    .cover-hook {
+      font-size: 14px;
+      color: rgba(255,255,255,0.5);
+      margin-top: 16px;
+      padding: 8px 20px;
+      background: rgba(74,222,128,0.06);
+      border: 1px solid rgba(74,222,128,0.12);
+      border-radius: 20px;
+    }
+    /* Quiz */
+    .quiz-area {
+      width: 100%;
+      max-width: 340px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .quiz-dim-tag {
+      display: inline-block;
+      padding: 3px 10px;
+      background: rgba(250,204,21,0.1);
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(250,204,21,0.7);
+      margin-bottom: 12px;
+    }
+    .quiz-question {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 24px;
+    }
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .quiz-opt {
+      padding: 16px 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      font-size: 15px;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.8);
+      cursor: pointer;
+      transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .quiz-opt:active { transform: scale(0.98); }
+    .quiz-opt.picked {
+      border-color: rgba(74,222,128,0.5);
+      background: rgba(74,222,128,0.08);
+      color: #fff;
+    }
+    .quiz-progress-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .quiz-num {
+      font-size: 13px;
+      color: rgba(255,255,255,0.25);
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.3);
+      font-size: 13px;
+      cursor: pointer;
+      padding: 6px 0;
+      margin-bottom: 8px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .back-btn:active { color: rgba(255,255,255,0.5); }
+
+    /* Loading */
+    .loading-box { text-align: center; }
+    .loading-spinner {
+      width: 48px; height: 48px;
+      border: 3px solid rgba(255,255,255,0.1);
+      border-top-color: #4ADE80;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+      font-size: 15px;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* Result */
+    .result-card {
+      width: 100%;
+      max-width: 340px;
+      background: #1a1a1a;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      padding: 32px 20px;
+      text-align: center;
+    }
+    .result-score-num {
+      font-size: 64px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #4ADE80, #22D3EE);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .result-score-label {
+      font-size: 14px;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 8px;
+    }
+    .result-title {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .result-sub {
+      font-size: 14px;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    /* Score bar */
+    .result-bar-wrap {
+      width: 100%;
+      margin-bottom: 24px;
+    }
+    .result-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .result-bar-fill {
+      height: 100%;
+      border-radius: 5px;
+      background: linear-gradient(90deg, #4ADE80, #22D3EE);
+      transition: width 1.2s ease;
+    }
+
+    /* Dimension analysis */
+    .dim-list {
+      text-align: left;
+    }
+    .dim-item {
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .dim-item:last-child { border-bottom: none; }
+    .dim-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .dim-icon {
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .dim-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.7);
+    }
+    .dim-score-tag {
+      font-size: 11px;
+      padding: 1px 8px;
+      border-radius: 8px;
+      font-weight: 600;
+      margin-left: auto;
+    }
+    .dim-score-tag.high {
+      background: rgba(74,222,128,0.12);
+      color: #4ADE80;
+    }
+    .dim-score-tag.mid {
+      background: rgba(250,204,21,0.12);
+      color: #FACC15;
+    }
+    .dim-score-tag.low {
+      background: rgba(96,165,250,0.12);
+      color: #60A5FA;
+    }
+    .dim-text {
+      font-size: 13px;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.5);
+      padding-left: 22px;
+    }
+
+    .result-footer {
+      margin-top: 16px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.15);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Screen 1: Cover -->
+  <div class="screen active" id="s1">
+    <div class="cover-emoji">📊</div>
+    <div class="tag tag-green mb-16">互动测试 · 5 道题</div>
+    <div class="title">测测我的<br>微信生意潜力</div>
+    <div class="subtitle">5 道题，评估你的生意在微信上的获客潜力</div>
+    <button class="btn-primary mt-8" onclick="startQuiz()">开始测试</button>
+    <div class="cover-hook">📊 内含腾讯广告行业数据</div>
+  </div>
+
+  <!-- Screen 2: Quiz -->
+  <div class="screen" id="s2">
+    <div class="quiz-area" id="quizArea">
+      <div id="quizBackBtn"></div>
+      <div class="quiz-progress-row">
+        <div class="quiz-num" id="qNum">1 / 5</div>
+        <div class="progress-bar" style="max-width:200px;"><div class="fill" id="qFill" style="width:0%"></div></div>
+      </div>
+      <div class="quiz-dim-tag" id="qDim"></div>
+      <div class="quiz-question" id="qText"></div>
+      <div class="quiz-options" id="qOpts"></div>
+    </div>
+  </div>
+
+  <!-- Screen 3: Loading -->
+  <div class="screen" id="s3">
+    <div class="loading-box">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">正在生成你的潜力报告…</div>
+    </div>
+  </div>
+
+  <!-- Screen 4: Result -->
+  <div class="screen" id="s4">
+    <div class="result-card" id="resultCard">
+      <div class="result-score-label">你的微信生意潜力分</div>
+      <div class="result-score-num" id="rScore">0</div>
+      <div class="result-bar-wrap">
+        <div class="result-bar-bg">
+          <div class="result-bar-fill" id="rFill" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="result-title" id="rTitle"></div>
+      <div class="result-sub" id="rSub"></div>
+      <div class="dim-list" id="dimList"></div>
+      <div class="result-footer">测测我的微信生意潜力</div>
+    </div>
+    <button class="btn-primary w-full mt-16" onclick="goTo(5)">领取行业投放数据</button>
+    <button class="share-btn" onclick="handleShare()">发给也想在微信获客的朋友 →</button>
+  </div>
+
+  <!-- Screen 5: CTA -->
+  <div class="screen" id="s5">
+    <div style="width:100%;max-width:340px;text-align:center;">
+      <div style="font-size:48px;margin-bottom:16px;">📊</div>
+      <div class="title" style="font-size:22px;" id="ctaTitle">想知道同行都怎么投的？</div>
+      <div class="subtitle">添加领取腾讯广告行业报告<br>了解你的行业投放数据</div>
+      <div class="qr-placeholder">企微二维码</div>
+      <button class="btn-primary w-full mt-16">领取行业投放数据</button>
+    </div>
+  </div>
+
+  <script>
+    // ===== Quiz Data =====
+    const quizzes = [
+      {
+        dim: '客户来源',
+        question: '你现在的客户主要从哪来？',
+        options: [
+          { text: '老客户转介绍，口碑带过来的', score: 3 },
+          { text: '路过进店 / 到店消费为主', score: 3 },
+          { text: '线上平台（美团、抖音等）', score: 2 },
+          { text: '还没什么稳定客源', score: 1 }
+        ]
+      },
+      {
+        dim: '内容能力',
+        question: '你平时会在朋友圈发产品或服务内容吗？',
+        options: [
+          { text: '经常发，有人看了来问价', score: 3 },
+          { text: '偶尔发一发', score: 2 },
+          { text: '很少发，不知道发什么', score: 2 },
+          { text: '基本不发朋友圈', score: 1 }
+        ]
+      },
+      {
+        dim: '接客能力',
+        question: '如果突然多来 10 个客户咨询，你能接得住吗？',
+        options: [
+          { text: '完全没问题，随时能接', score: 3 },
+          { text: '忙一点但能应付', score: 3 },
+          { text: '可能要找人帮忙', score: 2 },
+          { text: '还没想过这个问题', score: 1 }
+        ]
+      },
+      {
+        dim: '产品口碑',
+        question: '买过的客户一般怎么评价你？',
+        options: [
+          { text: '回头客多，经常被推荐', score: 3 },
+          { text: '还不错，偶尔有复购', score: 3 },
+          { text: '跟同行差不多', score: 2 },
+          { text: '刚起步，还不好说', score: 1 }
+        ]
+      },
+      {
+        dim: '同行感知',
+        question: '你觉得同行有在微信上投广告吗？',
+        options: [
+          { text: '有，经常刷到他们的广告', score: 3 },
+          { text: '好像有，但不太确定', score: 2 },
+          { text: '应该没有吧', score: 2 },
+          { text: '没关注过', score: 1 }
+        ]
+      }
+    ];
+
+    // ===== Dimension Feedback =====
+    const dimFeedback = {
+      '客户来源': {
+        3: { icon: '✅', tag: 'high', text: '已有稳定客源，广告能帮你放大现有优势，获客成本更低' },
+        2: { icon: '⚡', tag: 'mid', text: '线上获客有空间，微信广告能帮你补上这块，触达更多附近的人' },
+        1: { icon: '🌱', tag: 'low', text: '有潜力，广告正好帮你找到第一批精准客户，很多老板都是从 0 开始的' }
+      },
+      '内容能力': {
+        3: { icon: '✅', tag: 'high', text: '已有内容基础，做广告素材不费劲，朋友圈的内容稍微改改就能投' },
+        2: { icon: '⚡', tag: 'mid', text: '可以固定每周发 3 条产品内容，积累的素材直接就能当广告用' },
+        1: { icon: '🌱', tag: 'low', text: '有潜力，先从每周发 2 条产品内容开始，手机拍的真实照片反而效果更好' }
+      },
+      '接客能力': {
+        3: { icon: '✅', tag: 'high', text: '接得住，投了不浪费，广告来的每一个咨询都能转化成生意' },
+        2: { icon: '⚡', tag: 'mid', text: '先小量投起来，边投边理顺接客流程，有了节奏再加量' },
+        1: { icon: '🌱', tag: 'low', text: '有潜力，可以先设好自动回复和话术模板，准备好了投起来事半功倍' }
+      },
+      '产品口碑': {
+        3: { icon: '✅', tag: 'high', text: '回头客多是投广告最大的底气，新客进来也容易留住' },
+        2: { icon: '⚡', tag: 'mid', text: '口碑在积累中，投广告能加速这个过程，让更多人知道你' },
+        1: { icon: '🌱', tag: 'low', text: '有潜力，可以先攒几个客户好评截图当素材，真实评价比广告语更有说服力' }
+      },
+      '同行感知': {
+        3: { icon: '✅', tag: 'high', text: '同行已经在投，说明你的行业在微信上有机会，现在入场正当时' },
+        2: { icon: '⚡', tag: 'mid', text: '可以关注一下同行的广告，看看他们怎么投的，借鉴好的思路' },
+        1: { icon: '🌱', tag: 'low', text: '有潜力，先刷刷朋友圈看看有没有同行广告，说不定你能抢先一步' }
+      }
+    };
+
+    // ===== State =====
+    let currentQ = 0;
+    let scores = []; // per-question score
+
+    // ===== Functions =====
+    function startQuiz() {
+      currentQ = 0;
+      scores = [];
+      goTo(2);
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const q = quizzes[currentQ];
+      document.getElementById('qNum').textContent = `${currentQ + 1} / ${quizzes.length}`;
+      document.getElementById('qFill').style.width = `${(currentQ / quizzes.length) * 100}%`;
+      document.getElementById('qDim').textContent = `📌 ${q.dim}`;
+      document.getElementById('qText').textContent = q.question;
+
+      // Back button (show from Q2 onwards)
+      const backEl = document.getElementById('quizBackBtn');
+      if (currentQ > 0) {
+        backEl.innerHTML = `<button class="back-btn" onclick="goBackQuiz()">← 上一题</button>`;
+      } else {
+        backEl.innerHTML = `<button class="back-btn" onclick="goTo(1)">← 上一页</button>`;
+      }
+
+      const opts = document.getElementById('qOpts');
+      opts.innerHTML = q.options.map((o, i) => `
+        <div class="quiz-opt" onclick="pickAnswer(${i}, ${o.score}, this)">${o.text}</div>
+      `).join('');
+    }
+
+    function goBackQuiz() {
+      if (currentQ <= 0) return;
+      scores.pop(); // remove last answer
+      currentQ--;
+      const area = document.getElementById('quizArea');
+      area.style.opacity = '0';
+      area.style.transform = 'translateX(15px)';
+      setTimeout(() => {
+        loadQuestion();
+        area.style.opacity = '1';
+        area.style.transform = 'translateX(0)';
+      }, 200);
+    }
+
+    function pickAnswer(idx, score, el) {
+      if (el.classList.contains('picked')) return;
+      scores.push(score);
+      el.classList.add('picked');
+      document.querySelectorAll('.quiz-opt').forEach(o => o.style.pointerEvents = 'none');
+
+      setTimeout(() => {
+        currentQ++;
+        if (currentQ >= quizzes.length) {
+          showLoading();
+        } else {
+          const area = document.getElementById('quizArea');
+          area.style.opacity = '0';
+          area.style.transform = 'translateX(-15px)';
+          setTimeout(() => {
+            loadQuestion();
+            area.style.opacity = '1';
+            area.style.transform = 'translateX(0)';
+          }, 200);
+        }
+      }, 500);
+    }
+
+    function showLoading() {
+      goTo(3);
+      setTimeout(() => showResult(), 2000);
+    }
+
+    function showResult() {
+      const total = scores.reduce((a, b) => a + b, 0);
+      // Map 5-15 to ~55-98 score (偏高，给信心)
+      const pct = Math.min(98, Math.round(50 + (total - 5) * 4.8));
+
+      let title, sub;
+      if (pct >= 85) {
+        title = '🚀 你的生意和微信广告天然适配';
+        sub = '你的基础条件非常好，现在就差一条广告的距离。投起来大概率能跑正，建议尽快行动。';
+      } else if (pct >= 70) {
+        title = '💪 你的生意很适合在微信上获客';
+        sub = '基础不错，有几个小点优化一下，投广告的效果会更好。下面的建议可以参考。';
+      } else {
+        title = '🌱 你的生意有潜力，稍做准备效果翻倍';
+        sub = '不是不能投，是准备好了再投效果更好。下面几个建议帮你快速就位。';
+      }
+
+      // Animate score number
+      document.getElementById('rScore').textContent = '0';
+      document.getElementById('rTitle').textContent = title;
+      document.getElementById('rSub').textContent = sub;
+
+      // Dimension analysis
+      const dimList = document.getElementById('dimList');
+      dimList.innerHTML = quizzes.map((q, i) => {
+        const s = scores[i];
+        const fb = dimFeedback[q.dim][s];
+        return `
+          <div class="dim-item">
+            <div class="dim-header">
+              <span class="dim-icon">${fb.icon}</span>
+              <span class="dim-name">${q.dim}</span>
+              <span class="dim-score-tag ${fb.tag}">${s === 3 ? '优势' : s === 2 ? '可提升' : '有潜力'}</span>
+            </div>
+            <div class="dim-text">${fb.text}</div>
+          </div>
+        `;
+      }).join('');
+
+      goTo(4);
+
+      // Animate
+      setTimeout(() => {
+        document.getElementById('rFill').style.width = pct + '%';
+        animateScore(0, pct, 1200);
+      }, 300);
+    }
+
+    function animateScore(from, to, duration) {
+      const el = document.getElementById('rScore');
+      const start = performance.now();
+      function tick(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out
+        el.textContent = Math.round(from + (to - from) * eased);
+        if (progress < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    function goTo(n) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('s' + n).classList.add('active');
+    }
+
+    function handleShare() {
+      const score = document.getElementById('rScore').textContent;
+      if (navigator.share) {
+        navigator.share({
+          title: '测测我的微信生意潜力',
+          text: `我的微信生意潜力分 ${score} 分，你的呢？`,
+          url: location.href
+        });
+      } else {
+        alert('长按截图分享给朋友');
+      }
+    }
+  </script>
+</body>
+</html>
