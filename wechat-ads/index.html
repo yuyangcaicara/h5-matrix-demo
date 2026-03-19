@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>你不知道的微信广告热知识</title>
+  <title>只有内行才知道的获客门道</title>
   <link rel="stylesheet" href="../shared.css">
   <style>
     body { background: #111; }
@@ -220,11 +220,11 @@
   <!-- Screen 1: Cover -->
   <div class="screen active" id="s1">
     <div class="cover-icon">📱</div>
-    <div class="tag tag-green mb-16">互动测试 · 6 道认知题</div>
-    <div class="title">你不知道的<br>微信广告热知识</div>
-    <div class="subtitle">测测你对微信广告了解多少</div>
+    <div class="tag tag-green mb-16">老板必看 · 6 道题</div>
+    <div class="title">只有内行才知道的<br>获客门道</div>
+    <div class="subtitle">6 道题，看看你是不是被常识耽误了</div>
     <button class="btn-primary mt-8" onclick="startQuiz()">开始测试</button>
-    <div class="cover-hook">📊 完成测试可领取你的行业投放数据</div>
+    <div class="cover-hook">📊 完成测试可领取你的行业获客数据</div>
   </div>
 
   <!-- Screen 2: Quiz -->
@@ -258,20 +258,20 @@
       <div class="result-score-text" id="rScoreText"></div>
       <div class="result-summary" id="rSummary"></div>
     </div>
-    <button class="btn-primary w-full mt-16" onclick="goTo(4)">领取行业投放数据</button>
-    <button class="share-btn" onclick="handleShare()">发给也想投广告的朋友 →</button>
+    <button class="btn-primary w-full mt-16" onclick="goTo(4)">免费获取行业获客数据</button>
+    <button class="share-btn" onclick="handleShare()">发给也想获客的朋友 →</button>
   </div>
 
-  <!-- Screen 4: CTA -->
-  <div class="screen" id="s4">
-    <div style="width:100%;max-width:340px;text-align:center;">
-      <div style="font-size:48px;margin-bottom:16px;">📊</div>
-      <div class="title" style="font-size:22px;">想在微信投广告？<br>先看看你的行业数据</div>
-      <div class="subtitle">添加领取腾讯广告行业报告</div>
-      <div class="qr-placeholder">企微二维码</div>
-      <button class="btn-primary w-full mt-16">领取行业投放数据</button>
-    </div>
+<!-- Screen 4: CTA -->
+<div class="screen" id="s4">
+  <div style="width:100%;max-width:340px;text-align:center;">
+    <div style="font-size:48px;margin-bottom:16px;">📊</div>
+    <div class="title" style="font-size:22px;">你的行业<br>平均获客成本是？</div>
+    <div class="subtitle" style="margin-bottom:24px;">扫码了解你的行业数据<br>看看同行花多少钱获一个客户</div>
+    <div class="qr-placeholder">企微二维码</div>
+    <button class="btn-primary w-full mt-16">免费获取行业获客数据</button>
   </div>
+</div>
 
   <script>
     const quizzes = [
@@ -437,7 +437,7 @@
         '一个人就能搞定，有行业智投模式'
       ];
       const summary = document.getElementById('rSummary');
-      summary.innerHTML = '<div class="result-summary-title">微信广告 6 个真相</div>' +
+      summary.innerHTML = '<div class="result-summary-title">获客 6 个真相</div>' +
         facts.map(f => `
           <div class="ri-fact">
             <span class="ri-fact-icon">✅</span>
@@ -461,7 +461,7 @@
     function handleShare() {
       if (navigator.share) {
         navigator.share({
-          title: '你不知道的微信广告热知识',
+          title: '只有内行才知道的获客门道',
           text: `我答对了 ${score}/${quizzes.length} 题，你对投广告了解多少？`,
           url: location.href
         });
