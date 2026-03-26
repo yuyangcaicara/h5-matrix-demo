@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>你的生意适不适合投微信广告</title>
+  <title>你的生意，适不适合用微信获客</title>
   <link rel="stylesheet" href="../shared.css">
   <style>
     body { background: #0e0e0e; }
@@ -242,10 +242,10 @@
   <div class="screen active" id="s1">
     <div class="cover-emoji">📊</div>
     <div class="tag tag-green mb-16">互动测试 · 5 道题</div>
-    <div class="title">你的生意<br>适不适合投微信广告？</div>
+    <div class="title">你的生意<br>适不适合用微信获客？</div>
     <div class="subtitle">5 道题，看看你的生意在微信上的获客机会</div>
     <button class="btn-primary mt-8" onclick="startQuiz()">开始测试</button>
-    <div class="cover-hook">📊 答完免费看你的专属分析</div>
+    <div class="cover-hook">📊 内含行业获客方案</div>
   </div>
 
   <!-- Screen 2: Quiz -->
@@ -283,21 +283,20 @@
       <div class="result-title" id="rTitle"></div>
       <div class="result-sub" id="rSub"></div>
       <div class="dim-list" id="dimList"></div>
-      <div class="result-footer">你的生意适不适合投微信广告</div>
+      <div class="result-footer">你的生意，适不适合用微信获客</div>
     </div>
-    <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:16px;">🔥 你的同行已经在微信获客了</div>
-    <button class="btn-primary w-full mt-16" onclick="goTo(5)">了解一下微信能怎么帮你获客</button>
+    <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:16px;">🔥 已有 60 万+ 中小商家入驻</div>
+    <button class="btn-primary w-full mt-16" onclick="goTo(5)">了解同行获客方案</button>
     <button class="share-btn" onclick="handleShare()">发给朋友也测一测 →</button>
   </div>
 
 <!-- Screen 5: CTA -->
 <div class="screen" id="s5">
   <div style="width:100%;max-width:340px;text-align:center;">
-    <div style="font-size:48px;margin-bottom:16px;">🔥</div>
-    <div class="title" style="font-size:22px;" id="ctaTitle">想知道微信<br>能怎么帮你获客？</div>
-    <div class="subtitle" style="margin-bottom:24px;">扫码加顾问<br>免费帮你分析适不适合投</div>
+    <div style="font-size:48px;margin-bottom:16px;">📋</div>
+    <div class="title" style="font-size:22px;" id="ctaTitle">你的行业<br>同行都在怎么获客？</div>
+    <div class="subtitle" style="margin-bottom:24px;">扫码领取你的行业获客方案<br>看看同行用了哪些有效打法</div>
     <div class="qr-placeholder">企微二维码</div>
-    <button class="btn-primary w-full mt-16">加顾问聊聊</button>
   </div>
 </div>
 
@@ -529,7 +528,7 @@
       const score = document.getElementById('rScore').textContent;
       if (navigator.share) {
         navigator.share({
-          title: '你的生意适不适合投微信广告',
+          title: '你的生意，适不适合用微信获客',
           text: `我的微信获客适配度 ${score} 分，你也来测测？`,
           url: location.href
         });
